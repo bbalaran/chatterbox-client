@@ -53,8 +53,9 @@ form {
 }
 
 form input[type=text] {
+    display: block;
     margin-right: 10px;
-    width: 70%;
+    width: 65%;
     font-size: 12px;
     padding: 5px;
 }

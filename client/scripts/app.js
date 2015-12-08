@@ -10,6 +10,9 @@ app.init = function () {
 app.addMessage = function (item){
   var message = item.text ? escapeHtml(item.text) : "";
   var name = item.username ? escapeHtml(item.username) : "";
+  if (_.contains(app.friends, name)) {
+    name = '<strong>' + name + '</strong>';
+  }
   $('#chats').append('<div class="chatMessage"> <p class="userName">' 
   + name  + '</p> <p class="messageContent">' 
   + message + '</p> </div>');
@@ -43,35 +46,30 @@ app.fetch = function () {
     dataType: 'json',
     contentType: 'application/json',
     success: function (data) {
-
-    // check value of room name drop down
-    var room = $('#roomSelect').val();
-    var totalMessages = 0;
-    var j = 0;
-    // if default, load all messages
-    if(room === 'home'){
+      // check value of room name drop down
+      var room = $('#roomSelect').val();
+      var totalMessages = 0;
+      var j = 0;
+      // if default, load all messages
       app.clearMessages();
-      for (var i=0; i<20; i++) {
-          app.addMessage(data.results[i]);
-        if(!_.contains(app.room,data.results[i].roomname)){
-          app.addRoom(data.results[i].roomname);
+      if(room === 'home'){
+        for (var i=0; i<20; i++) {
+            app.addMessage(data.results[i]);
+          if(!_.contains(app.room,data.results[i].roomname)){
+            app.addRoom(data.results[i].roomname);
+          }
+        }
+      } 
+      else {
+        while (totalMessages <= 20 || data.results[j] !== undefined) {
+          debugger;
+          if(data.results[j].roomname === room){
+            app.addMessage(data.results[j]);
+            totalMessages++;
+          }
+          j++;
         }
       }
-    } else {
-      while (totalMessages <= 20 || data.results[j]===undefined) {
-        debugger;
-        if(data.results[j].roomname === room){
-          app.addMessage(data.results[j]);
-          totalMessages++;
-        }
-        j++;
-      }
-    }
-
-    // if not default, filter to show only one room     
-
-
-      
     },
     error: function (data) {
       throw 'chatterbox: Failed to send message';
@@ -112,8 +110,13 @@ function escapeHtml(text) {
  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
-app.addFriend = function () {
-  console.log('test');
+app.friends = [];
+
+app.addFriend = function (username) {
+  app.friends.push(username);
+  console.log(app.friends);
+  $('#friends').append('<option value="'+ username + '">' + username + '</option>');
+
 };
 
 app.handleSubmit = function () {
@@ -142,7 +145,6 @@ $(document).ready(function(){
       app.clearMessages();
       app.fetch();
   })
-
 });
 
 

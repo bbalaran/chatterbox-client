@@ -14,3 +14,13 @@
 .messageContent {
   font-size: 0.9em;
 }
+
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+input[type=text]{
+  width: 200px;
+}
+
