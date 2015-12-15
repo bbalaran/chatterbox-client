@@ -19,11 +19,12 @@ app.addMessage = function (item){
 }
 
 
-app.server = 'https://api.parse.com/1/classes/chatterbox';
+app.server = 'http://127.0.0.1:3000';
+
 var messageStore = [];
 app.send = function (message) { 
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: 'http://127.0.0.1:3000',
     type: 'POST',
     data: JSON.stringify(message),
     dataType: 'json',
@@ -32,7 +33,10 @@ app.send = function (message) {
       app.fetch();
     },
     error: function (data) {
-      throw 'chatterbox: Failed to send message';
+      console.log('chatterbox: Failed to send message');
+      app.fetch();
+      throw data;
+
     }
 
   });
@@ -40,7 +44,7 @@ app.send = function (message) {
 
 app.fetch = function () {
     $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: 'http://127.0.0.1:3000',
     type: 'GET',
     data: JSON.stringify(message),
     dataType: 'json',
@@ -72,7 +76,8 @@ app.fetch = function () {
       }
     },
     error: function (data) {
-      throw 'chatterbox: Failed to send message';
+      console.log('chatterbox: Failed to send message');
+      throw data;
     }
   });
 };
@@ -114,7 +119,6 @@ app.friends = [];
 
 app.addFriend = function (username) {
   app.friends.push(username);
-  console.log(app.friends);
   $('#friends').append('<option value="'+ username + '">' + username + '</option>');
 
 };
@@ -125,13 +129,12 @@ app.handleSubmit = function () {
       text : $('#message').val(),
       roomname: $('#roomname').val()||$('#roomSelect').val()
     }
-    console.log(messageObj);
     app.send(messageObj);
 };
 
 $(document).ready(function(){
   app.init();
-  setInterval(app.fetch,1500);
+  //setInterval(app.fetch,1000);
   $('#chats').on('click', 'p.userName', function () {
     app.addFriend($(this).text());
   });
